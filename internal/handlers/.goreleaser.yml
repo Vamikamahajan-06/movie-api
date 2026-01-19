@@ -1,0 +1,19 @@
+version: 1
+
+builds: 
+  - id: movie-api
+    main: ./cmd
+    binary: boootstrap
+    goos: 
+      - linux
+    goarch: 
+      - amd64
+    env: 
+      - CGO_ENABLED=0
+
+archives:
+  - id: lambda
+    format: zip
+    builds:
+      - movie-api
+    name_template: "movie-api"
