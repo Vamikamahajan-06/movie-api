@@ -1,18 +1,20 @@
 version: 2
 
-builds:
+builds: 
   - id: movie-api
     main: ./cmd/main.go
-    binary: bootstrap
-    goos:
+    
+    binary: boootstrap
+    goos: 
       - linux
-    goarch:
+    goarch: 
       - amd64
-    env:
+    env: 
       - CGO_ENABLED=0
 
 archives:
   - id: lambda
     format: zip
-    files:
-      - bootstrap
+    builds:
+      - movie-api
+    name_template: "movie-api"

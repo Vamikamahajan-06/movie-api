@@ -2,30 +2,42 @@ package handlers
 
 import (
 	"context"
+	"strings"
 
-	"github.com/aws/aws/lambda-go/events"
+	"github.com/aws/aws-lambda-go/events"
 )
 
-func Router(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
-	switch req.RequestContext.HTTP.Method {
-	case "POST":
+func Router(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	method := req.HTTPMethod
+	path := req.Path
+
+	switch {
+
+	// Create movie
+	case method == "POST" && path == "/movies":
 		return CreateMovie(req)
-	case "GET":
-		if req.PathParameters["id"] != "" {
-			return GetMovie(req)
-		}
+
+	// Get movie by ID
+	case method == "GET" && strings.HasPrefix(path, "/movies/"):
+		return GetMovie(req)
+
+	// Search movies
+	case method == "GET" && path == "/movies":
 		return SearchMovies(req)
 
-	case "PUT":
+	// Update movie
+	case method == "PUT" && strings.HasPrefix(path, "/movies/"):
 		return UpdateMovie(req)
 
-	case "DELETE":
+	// Delete movie
+	case method == "DELETE" && strings.HasPrefix(path, "/movies/"):
 		return DeleteMovie(req)
 
 	default:
-		return events.APIGatewayV2HTTPResponse{
-			StatusCode: 405,
-			Body:       "Method not Allowed",
+		return events.APIGatewayProxyResponse{
+			StatusCode: 404,
+			Body:       "Route not found",
 		}, nil
 	}
 }

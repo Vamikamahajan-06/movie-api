@@ -55,7 +55,7 @@ resource "aws_iam_role" "lambda_role"{
 //create IAM policies
 resource "aws_iam_role_policy" "lambda_policy" {
     role = aws_iam_role.lambda_role.id
-    policy = jsoncode({
+    policy = jsonencode({
         Version = "2012-10-17"
         Statement = [
             {
@@ -77,7 +77,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 //create Lambda function
-resource "aws_lamda_function" "movie_api"{
+resource "aws_lambda_function" "movie_api"{
     function_name = "movie-api"
     role = aws_iam_role.lambda_role.arn
     handler = "bootstrap"
@@ -87,7 +87,7 @@ resource "aws_lamda_function" "movie_api"{
     
     environment {
         variables = {
-            TABLE_NAME = aws_dyanamodb_table.movies.name
+            TABLE_NAME = aws_dynamodb_table.movies.name
         }
     }
 }
@@ -98,13 +98,18 @@ resource "aws_apigatewayv2_api" "http_api"{
     protocol_type = "HTTP"
 }
 resource "aws_apigatewayv2_integration" "lambda"{
-    api_id = aws_apigatewayv2_api.http.api.id
+    api_id = aws_apigatewayv2_api.http_api.id
     integration_type = "AWS_PROXY"
     integration_uri = aws_lambda_function.movie_api.invoke_arn
 }
 resource "aws_apigatewayv2_route" "any"{
     api_id = aws_apigatewayv2_api.http_api.id
     route_key = "ANY /{proxy+}"
+    target = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+resource "aws_apigatewayv2_route" "root"{
+    api_id = aws_apigatewayv2_api.http_api.id
+    route_key = "ANY /"
     target = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 resource "aws_apigatewayv2_stage" "default" {
@@ -116,8 +121,12 @@ resource "aws_apigatewayv2_stage" "default" {
 //allow API gateway to call lamda
 resource "aws_lambda_permission" "api" {
     statement_id = "AllowAPIGateway"
-    action = "lamda:InvokeFunction"
+    action = "lambda:InvokeFunction"
     function_name = aws_lambda_function.movie_api.function_name
     principal = "apigateway.amazonaws.com"
     source_arn= "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+}
+
+output "api_url" {
+    value = aws_apigatewayv2_api.http_api.api_endpoint
 }
