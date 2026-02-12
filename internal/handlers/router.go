@@ -18,19 +18,19 @@ func Router(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIG
 	case method == "POST" && path == "/movies":
 		return CreateMovie(req)
 
-	// Get movie by ID
-	case method == "GET" && strings.HasPrefix(path, "/movies/"):
-		return GetMovie(req)
-
-	// Search movies
+	// Search movies (GET /movies?title=...&genre=...)
 	case method == "GET" && path == "/movies":
 		return SearchMovies(req)
 
-	// Update movie
+	// Get movie by ID (GET /movies/{id})
+	case method == "GET" && strings.HasPrefix(path, "/movies/"):
+		return GetMovie(req)
+
+	// Update movie (PUT /movies/{id})
 	case method == "PUT" && strings.HasPrefix(path, "/movies/"):
 		return UpdateMovie(req)
 
-	// Delete movie
+	// Delete movie (DELETE /movies/{id})
 	case method == "DELETE" && strings.HasPrefix(path, "/movies/"):
 		return DeleteMovie(req)
 

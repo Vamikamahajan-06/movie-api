@@ -1,0 +1,21 @@
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.crash.log
+``
+
+# Go / build artifacts
+bin/
+dist/
+build/
+*.exe
+*.zip
+*.test
+
+# OS/editor
+.DS_Store
+Thumbs.db
+``

@@ -1,10 +1,10 @@
 package models
 
 type Movie struct {
-	ID          string  `json: "id"`
-	Title       string  `json: "Title"`
-	Genre       string  `json: "Genre"`
-	Year        int     `json: "Year"`
-	Rating      float64 `json: "Rating"`
-	Description string  `json: "Description"`
+	MovieID     string  `json:"movieId"`
+	Title       string  `json:"title"`
+	Genre       string  `json:"genre"`
+	Year        int     `json:"year"`
+	Rating      float64 `json:"rating"`
+	Description string  `json:"description"`
 }

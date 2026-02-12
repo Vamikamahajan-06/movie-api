@@ -87,7 +87,7 @@ resource "aws_lambda_function" "movie_api"{
     
     environment {
         variables = {
-            TABLE_NAME = aws_dynamodb_table.movies.name
+            MOVIES_TABLE = aws_dynamodb_table.movies.name
         }
     }
 }
@@ -119,6 +119,7 @@ resource "aws_apigatewayv2_stage" "default" {
 }
 
 //allow API gateway to call lamda
+
 resource "aws_lambda_permission" "api" {
     statement_id = "AllowAPIGateway"
     action = "lambda:InvokeFunction"
